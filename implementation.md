@@ -16,7 +16,8 @@ Systems
   * Rendering
 
 Components (all have `id` field)
-  * Position (x, y, size)
+  * Position (x, y)
+  * Collision (size)
   * Input (probably a tagged union)
   * Equipment
   * Inventory (should be a pointer so as not to waste memory)
@@ -31,3 +32,13 @@ Keep an index of next free space, and when making new entity:
     * Increment `free`
     * If `free >= MAX_ENTITIES`, panic!
   * Return `free++`
+
+Some entities:
+ * Player
+ * Enemy
+ * Door
+ * Item
+ * Treasure
+ * Trap
+
+Arrows and spells aren't entities; they're just functions that are called by the input system
