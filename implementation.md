@@ -23,6 +23,7 @@ Components (all have `id` field)
   * Inventory (should be a pointer so as not to waste memory)
   * Stats (HP can be displayed if graphical)
   * Graphical (sprites, etc).
+  * (Maybe an event listener? For example, if it collides with something, it could reveal itself or something)
 
 Entities stored as array of bitmasks (`int` probably works) and flat arrays of components
 
