@@ -4,7 +4,7 @@ Tilemap for map data (collision and rendering) (keep a thing for rooms)
 
 Entities managed using entity component system
 
-Active entities are within some radius of player position, and inactive enemies are placed in a ~priority queue~ simple array/list
+Active entities are within some radius of player position, and inactive enemies are placed in a ~~priority queue~~ simple array/list
 
 Should particles be part of ECS? Probably not
 
