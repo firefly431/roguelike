@@ -16,6 +16,7 @@ Systems
   * Rendering
 
 Components (all have `id` field)
+  * Information (player can inspect objects if they have collision)
   * (Graphical) Position (x, y)
   * Collision (tile x, y, size)
   * Input (probably a tagged union)
