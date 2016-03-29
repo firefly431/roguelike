@@ -43,3 +43,12 @@ Some entities:
  * Trap
 
 Arrows and spells aren't entities; they're just functions that are called by the input system
+
+Map Generation
+ * Generate a whole bunch of rooms relatively near each other (rectangles and L-shapes)
+ * Connect randomly
+ * Pick a good starting point (a corner maybe)
+ * Gradually increase difficulty as you traverse a path (no repeats); maybe randomly restart somewhere along the way and put a locked door
+ * Other rooms should have difficulty quite higher than those next to them
+ * Put doors randomly
+ * Populate rooms according to difficulty
