@@ -4,7 +4,7 @@ Tilemap for map data (collision and rendering) (keep a thing for rooms)
 
 Entities managed using entity component system
 
-Active entities are within some radius of player position, and inactive enemies are placed in a ~~priority queue~~ simple array/list
+Active entities are within some radius of player position, and inactive enemies are placed in a ~~priority queue~~ simple array/list of ComponentBags or something (maybe use a vector to hold them)
 
 Should particles be part of ECS? Probably not
 
@@ -17,13 +17,12 @@ Systems
 
 Components (all have `id` field)
   * Information (player can inspect objects if they have collision)
-  * (Graphical) Position (x, y)
   * Collision (tile x, y, size)
   * Input (probably a tagged union)
   * Equipment
   * Inventory (should be a pointer so as not to waste memory)
   * Stats (HP can be displayed if graphical) (Maybe status effects)
-  * Graphical (sprites, etc).
+  * Graphical (position, sprites, etc).
   * (Maybe an event listener? For example, if it collides with something, it could reveal itself or something)
 
 Entities stored as array of bitmasks (`int` probably works) and flat arrays of components
