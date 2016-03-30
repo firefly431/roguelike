@@ -1,5 +1,5 @@
-#ifndef ROGUELIKE_INCLUDE_LOG
-#define ROGUELIKE_INCLUDE_LOG
+#ifndef ROGUELIKE_INCLUDE_LOG_LOG
+#define ROGUELIKE_INCLUDE_LOG_LOG
 
 #include <iostream>
 
