@@ -1,18 +1,23 @@
 #include <window/window.h>
+#include <log/log.h>
 
 int main(int argc, char **argv) {
     try {
-        GLFWWindow window;
-    } catch (const std::exception &e) {
-        // TODO: log the exception
+        window::Window window;
+        // game loop
+        while (window.running()) {
+            window.clear();
+            // draw
+            // swap buffers
+            window.swapBuffers();
+            window.waitEvents();
+        }
+    } catch (const window::WindowCreationError &e) {
+        LOG_ERR(e.what());
         return 1;
-    }
-    // game loop
-    while (window.running()) {
-        window.clear();
-        // draw
-        // swap buffers
-        window.swapBuffers();
+    } catch (const std::exception &e) {
+        LOG_ERR("Critical failure: ", e.what());
+        return 1;
     }
     return 0;
 }

@@ -10,14 +10,18 @@ namespace window {
     class GLFWWindow {
         static bool errored;
         GLFWwindow *window;
+
+        static void error_callback(int error, const char *description);
+        static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+        static void char_callback(GLFWwindow *window, unsigned int codepoint);
     public:
         GLFWWindow(/* StateManager manager */); // activates window
         ~GLFWWindow() {glfwDestroyWindow(window); glfwTerminate();}
 
         void activate() {glfwMakeContextCurrent(window);}
         bool running() {return !GLFWWindow::errored && !glfwWindowShouldClose(window);}
-        void clear() {glClear();} // maybe move to graphics namespace
-        void swapBuffers() {glfwSwapBuffers();}
+        void clear() {glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);} // maybe move to graphics namespace
+        void swapBuffers() {glfwSwapBuffers(window);}
         void waitEvents() {glfwWaitEvents();}
     };
 }

@@ -4,11 +4,11 @@
 #include <iostream>
 
 namespace log {
-    std::ostream &output = std::cerr;
+    inline std::ostream &output() { return std::cerr; }
     inline void do_output() {}
     template<typename T, typename ...R>
-    inline void do_output(T &&x, R ...rest) {
-        output << std::forward<T>(x);
+    inline void do_output(T &&x, R &&...rest) {
+        output() << std::forward<T>(x);
         do_output(std::forward<R>(rest)...);
     }
 }
