@@ -1,12 +1,12 @@
-#ifndef ROGUELIKE_INCLUDED_WINDOW_GLFW
-#define ROGUELIKE_INCLUDED_WINDOW_GLFW
+#ifndef ROGUELIKE_INCLUDED_GRAPHICS_GLFW
+#define ROGUELIKE_INCLUDED_GRAPHICS_GLFW
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include "constants.h"
 
-namespace window {
+namespace graphics {
     class GLFWWindow {
         static bool errored;
         GLFWwindow *window;

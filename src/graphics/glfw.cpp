@@ -1,9 +1,9 @@
-#include <window/window.h>
-#include <window/constants.h>
+#include <graphics/window.h>
+#include <graphics/constants.h>
 
 #include <log/log.h>
 
-namespace window {
+namespace graphics {
     bool GLFWWindow::errored = false;
 
     void GLFWWindow::error_callback(int error, const char *description) {

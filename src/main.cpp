@@ -1,11 +1,11 @@
-#include <window/window.h>
+#include <graphics/window.h>
 #include <log/log.h>
 
 #include <lodepng.h>
 
 int main(int argc, char **argv) {
     try {
-        window::Window window;
+        graphics::Window window;
         window.activate();
         // initialize resources
         GLuint vao;
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
         }
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);
-    } catch (const window::WindowCreationError &e) {
+    } catch (const graphics::WindowCreationError &e) {
         LOG_ERR(e.what());
         return 1;
     } catch (const std::exception &e) {

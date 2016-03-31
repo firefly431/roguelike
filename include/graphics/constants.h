@@ -1,9 +1,9 @@
-#ifndef ROGUELIKE_INCLUDED_WINDOW_CONSTANTS
-#define ROGUELIKE_INCLUDED_WINDOW_CONSTANTS
+#ifndef ROGUELIKE_INCLUDED_GRAPHICS_CONSTANTS
+#define ROGUELIKE_INCLUDED_GRAPHICS_CONSTANTS
 
-#include <window/glfw.h>
+#include <graphics/glfw.h>
 
-namespace window {
+namespace graphics {
     const int DEFAULT_WIDTH = 640;
     const int DEFAULT_HEIGHT = 480;
     const char *const TITLE = "Roguelike";

@@ -1,11 +1,11 @@
-#ifndef ROGUELIKE_INCLUDED_WINDOW_WINDOW
-#define ROGUELIKE_INCLUDED_WINDOW_WINDOW
+#ifndef ROGUELIKE_INCLUDED_GRAPHICS_WINDOW
+#define ROGUELIKE_INCLUDED_GRAPHICS_WINDOW
 
-#include <window/glfw.h>
+#include <graphics/glfw.h>
 #include <string>
 #include <stdexcept>
 
-namespace window {
+namespace graphics {
     typedef GLFWWindow Window;
 
     class WindowCreationError : public std::runtime_error {
