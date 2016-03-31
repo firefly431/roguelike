@@ -5,4 +5,17 @@
 
 #include <lodepng.h>
 
+#include <string>
+
+namespace graphics {
+    class GLTexture {
+        GLuint id;
+    public:
+        Texture(const std::string &fname);
+        ~Texture();
+        
+        void activate();
+    };
+}
+
 #endif
