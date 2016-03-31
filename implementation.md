@@ -60,3 +60,17 @@ To center the screen:
     * Center display on player
     * Move display so that it is contained in the expanded room dimensions
   * Else center display on player
+
+Texture rendering:
+  * One VAO and VBO used, containing (0, 0), (1, 0), (1, 1), and (0, 1).
+  * Many uniforms pass in necessary information
+    * `ivec2[]`
+      * Viewport position
+      * Viewport width, height
+      * Object position, height (in pixels)
+      * Object width, height (in pixels)
+    * `vec2[]`
+      * Texture position
+      * Texture size
+    * `float` for depth
+    * `sampler2D` texture
