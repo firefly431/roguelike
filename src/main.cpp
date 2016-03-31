@@ -1,4 +1,4 @@
-#include <graphics/window.h>
+#include <graphics/types.h>
 #include <log/log.h>
 
 #include <lodepng.h>
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
                 glDeleteVertexArrays(1, &vao);
                 return 1;
             }
-            glActiveTexture(GL_TEXTURE0 + texture);
+            glActiveTexture(GL_TEXTURE0);
             glGenTextures(1, &texture_id);
             glBindTexture(GL_TEXTURE_2D, texture_id);
             // set image format

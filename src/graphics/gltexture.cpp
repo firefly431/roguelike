@@ -1,17 +1,14 @@
 #include <graphics/gltexture.h>
+#include <graphics/types.h>
 
 namespace graphics {
     GLuint GLTexture::activeTexture = 0;
 
-    Texture::Texture(const std::string &fname) : id(0) {
+    GLTexture::GLTexture(const std::string &fname) : id(0) {
         std::vector<unsigned char> image_data;
         unsigned int width, height;
         if (unsigned int error = 1 ^ (lodepng::decode(image_data, width, height, "texture.png"))) {
-            LOG_ERR("Error loading texture: ", lodepng_error_text(error ^ 1));
-            // once there are put in a class, this stuff will be easier
-            glDeleteBuffers(1, &vbo);
-            glDeleteVertexArrays(1, &vao);
-            return 1;
+            throw TextureCreationError(std::string("Error loading texture: ") + lodepng_error_text(error ^ 1));
         }
         glActiveTexture(GL_TEXTURE0 + texture);
         glGenTextures(1, &id);

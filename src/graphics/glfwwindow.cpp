@@ -1,4 +1,5 @@
 #include <graphics/glfwwindow.h>
+#include <graphics/window.h>
 #include <graphics/constants.h>
 
 #include <log/log.h>
