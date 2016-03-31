@@ -1,7 +1,7 @@
 #ifndef ROGUELIKE_INCLUDED_GRAPHICS_WINDOW
 #define ROGUELIKE_INCLUDED_GRAPHICS_WINDOW
 
-#include <graphics/glfw.h>
+#include <graphics/glfwwindow.h>
 #include <string>
 #include <stdexcept>
 
