@@ -14,8 +14,9 @@ namespace window {
         static void error_callback(int error, const char *description);
         static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
         static void char_callback(GLFWwindow *window, unsigned int codepoint);
+        static void resize_callback(GLFWwindow *window, int width, int height);
     public:
-        GLFWWindow(/* StateManager manager */); // activates window
+        GLFWWindow(/* StateManager manager */);
         ~GLFWWindow() {glfwDestroyWindow(window); glfwTerminate();}
 
         void activate() {glfwMakeContextCurrent(window);}

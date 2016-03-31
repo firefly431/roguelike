@@ -4,6 +4,7 @@
 int main(int argc, char **argv) {
     try {
         window::Window window;
+        window.activate();
         // game loop
         while (window.running()) {
             window.clear();

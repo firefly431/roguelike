@@ -19,6 +19,16 @@ namespace window {
         // do nothing for now
     }
 
+    void GLFWWindow::resize_callback(GLFWwindow *window, int width, int height) {
+        // store the old context
+        auto old_context = glfwGetCurrentContext();
+        glfwMakeContextCurrent(window);
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        // restore the old context
+        glfwMakeContextCurrent(old_context);
+    }
+
     GLFWWindow::GLFWWindow() : window(nullptr) {
         // initialize GLFW
         glfwSetErrorCallback(GLFWWindow::error_callback);
@@ -31,10 +41,13 @@ namespace window {
             glfwTerminate();
             throw WindowCreationError("Failed to create window");
         }
+        // store the current context
+        auto old_context = glfwGetCurrentContext();
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
         glfwSetKeyCallback(window, GLFWWindow::key_callback);
         glfwSetCharCallback(window, GLFWWindow::char_callback);
+        glfwSetWindowSizeCallback(window, GLFWWindow::resize_callback);
         // initialize GLEW
         ::glewExperimental = true;
         if (auto error = glewInit() ^ GLEW_OK) {
@@ -42,5 +55,7 @@ namespace window {
             glfwTerminate();
             throw WindowCreationError(std::string("Failed to initialize GLEW: ") + reinterpret_cast<const char *>(glewGetErrorString(error ^ GLEW_OK)));
         }
+        // restore the old context
+        glfwMakeContextCurrent(old_context);
     }
 }
