@@ -14,10 +14,14 @@ namespace graphics {
     public:
         Texture(const std::string &fname);
         ~Texture();
-        
-        void activate();
-        
-        static void beginDraw(); // call before draw loop; resets active texture to 0
+
+        void activate() {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, id);
+        }
+
+        // call before draw loop; resets active texture to 0
+        static void beginDraw() {GLTexture::activeTexture = 0;}
     };
 }
 
