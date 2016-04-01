@@ -58,30 +58,8 @@ int main(int argc, char **argv) {
         glDeleteShader(fs);
         glUseProgram(prog);
         // load texture
-        GLuint texture_id = 0;
-        {
-            std::vector<unsigned char> image_data;
-            unsigned int width, height;
-            if (unsigned int error = lodepng::decode(image_data, width, height, "texture.png")) {
-                LOG_ERR("Error loading texture: ", lodepng_error_text(error ^ 1));
-                // once there are put in a class, this stuff will be easier
-                glDeleteBuffers(1, &vbo);
-                glDeleteVertexArrays(1, &vao);
-                return 1;
-            }
-            glActiveTexture(GL_TEXTURE0);
-            glGenTextures(1, &texture_id);
-            glBindTexture(GL_TEXTURE_2D, texture_id);
-            // set image format
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            // put data
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image_data[0]);
-            // set tex parameters I like
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // necessary for wall/floor
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        }
+        graphics::Texture tex("texture.png");
+        tex.activate();
         GLuint tex_loc = glGetUniformLocation(prog, "tex");
         glProgramUniform1i(prog, tex_loc, 0);
         // game loop
@@ -93,7 +71,6 @@ int main(int argc, char **argv) {
             window.swapBuffers();
             window.waitEvents();
         }
-        glDeleteTextures(1, &texture_id);
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);
     } catch (const graphics::WindowCreationError &e) {

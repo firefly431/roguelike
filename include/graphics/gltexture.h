@@ -13,7 +13,7 @@ namespace graphics {
         static GLuint activeTexture; // used to optimize texture switching
     public:
         GLTexture(const std::string &fname);
-        ~GLTexture();
+        ~GLTexture() {glDeleteTextures(1, &id);}
 
         void activate() {
             if (GLTexture::activeTexture != id) {
