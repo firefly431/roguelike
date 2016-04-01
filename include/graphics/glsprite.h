@@ -8,7 +8,7 @@ namespace graphics {
         const GLTexture &tex;
         float tx, ty, tw, th;
     public:
-        GLSprite(const Texture &tex, float tx, ty, tw, th);
+        GLSprite(const GLTexture &tex, float tx, float ty, float tw, float th);
         ~GLSprite();
         void drawAt(int x, int y);
     };

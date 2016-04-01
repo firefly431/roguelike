@@ -1,4 +1,5 @@
 #include <graphics/types.h>
+#include <graphics/exceptions.h>
 #include <log/log.h>
 
 #include <lodepng.h>

@@ -1,5 +1,5 @@
 #include <graphics/gltexture.h>
-#include <graphics/types.h>
+#include <graphics/exceptions.h>
 
 namespace graphics {
     GLuint GLTexture::activeTexture = 0;
@@ -10,9 +10,9 @@ namespace graphics {
         if (unsigned int error = 1 ^ (lodepng::decode(image_data, width, height, "texture.png"))) {
             throw TextureCreationError(std::string("Error loading texture: ") + lodepng_error_text(error ^ 1));
         }
-        glActiveTexture(GL_TEXTURE0 + texture);
+        glActiveTexture(GL_TEXTURE0);
         glGenTextures(1, &id);
-        glBindTexture(GL_TEXTURE_2D, texture_id);
+        glBindTexture(GL_TEXTURE_2D, id);
         // set image format
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         // put data
