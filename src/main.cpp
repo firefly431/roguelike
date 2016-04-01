@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
         {
             std::vector<unsigned char> image_data;
             unsigned int width, height;
-            if (unsigned int error = 1 ^ (lodepng::decode(image_data, width, height, "texture.png"))) {
+            if (unsigned int error = lodepng::decode(image_data, width, height, "texture.png")) {
                 LOG_ERR("Error loading texture: ", lodepng_error_text(error ^ 1));
                 // once there are put in a class, this stuff will be easier
                 glDeleteBuffers(1, &vbo);

@@ -7,7 +7,7 @@ namespace graphics {
     GLTexture::GLTexture(const std::string &fname) : id(0) {
         std::vector<unsigned char> image_data;
         unsigned int width, height;
-        if (unsigned int error = 1 ^ (lodepng::decode(image_data, width, height, "texture.png"))) {
+        if (unsigned int error = lodepng::decode(image_data, width, height, "texture.png")) {
             throw TextureCreationError(std::string("Error loading texture: ") + lodepng_error_text(error ^ 1));
         }
         glActiveTexture(GL_TEXTURE0);
