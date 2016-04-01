@@ -30,7 +30,11 @@ int main(int argc, char **argv) {
             "#version 330 core\n"
             "layout(location = 0) in vec2 position;\n"
             "out vec2 texcoord;\n"
+            "uniform ivec2[4] screencoords;\n"
+            "uniform vec2[2] texcoords;\n"
+            "uniform float depth = 0.0;\n"
             "void main() {\n"
+            // TODO: convert world to screen space
             "    gl_Position = vec4(position, 0.0, 1.0);\n"
             "    texcoord = position;\n"
             "}\n",
