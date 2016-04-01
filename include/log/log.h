@@ -15,7 +15,7 @@ namespace log {
 
 #define LOG_STRINGIFY2(x) #x
 #define LOG_STRINGIFY(x) LOG_STRINGIFY2(x)
-#define LOG_LOCATION_STRING __FILE__ ":" LOG_STRINGIFY(__LINE__)
+#define LOG_LOCATION_STRING __FILE__ ":" LOG_STRINGIFY(__LINE__) ": "
 
 #define LOG_DEBUG(...) ::log::do_output(LOG_LOCATION_STRING "DEBUG: ", __VA_ARGS__)
 #define LOG_INFO(...) ::log::do_output(LOG_LOCATION_STRING "INFO: ", __VA_ARGS__)
