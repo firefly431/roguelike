@@ -16,8 +16,10 @@ namespace graphics {
         ~GLTexture();
 
         void activate() {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, id);
+            if (GLTexture::activeTexture != id) {
+                glBindTexture(GL_TEXTURE_2D, id);
+                GLTexture::activeTexture = id;
+            }
         }
 
         // call before draw loop; resets active texture to 0
