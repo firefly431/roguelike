@@ -66,9 +66,9 @@ Texture rendering:
   * Many uniforms pass in necessary information
     * `ivec2[]`
       * Viewport position
-      * Viewport width, height
-      * Object position, height (in pixels)
-      * Object width, height (in pixels)
+      * Viewport size
+      * Object position (in pixels)
+      * Object size (in pixels)
     * `vec2[]`
       * Texture position
       * Texture size
