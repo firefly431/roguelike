@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
             // -1-1 coordinates = 2 * 0-1coords - 1
             "    gl_Position = vec4((objcoords[0] - viewcoords[0] + position * objcoords[1]) / vec2(viewcoords[1]) * 2.0 - 1.0, 0.0, 1.0);\n"
             "    gl_Position.y = -gl_Position.y;"
-            "    texcoord = position;\n"
+            "    texcoord = texcoords[0] + position * texcoords[1];\n"
             "}\n",
                    *const FRAGMENT_SHADER_CODE =
             "#version 330 core\n"
