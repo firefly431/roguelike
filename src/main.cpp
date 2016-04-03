@@ -12,38 +12,37 @@ int main(int argc, char **argv) {
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
-        const GLfloat vx_data[] = {
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-        };
-        GLuint vbo;
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof vx_data, vx_data, GL_STATIC_DRAW);
+        GLint vx_data[8];
+        GLfloat tx_data[8];
+        GLuint v_vbo;
+        GLuint t_vbo;
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(1);
+        glGenBuffers(1, &v_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, v_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof vx_data, nullptr, GL_STREAM_DRAW);
+        glVertexAttribIPointer(0, 2, GL_INT, 0, 0);
+        glGenBuffers(1, &t_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, t_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof tx_data, nullptr, GL_STREAM_DRAW);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
         GLuint vs = glCreateShader(GL_VERTEX_SHADER);
         GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
         const char *const VERTEX_SHADER_CODE =
             "#version 330 core\n"
-            "layout(location = 0) in vec2 position;\n"
+            "layout(location = 0) in ivec2 position;\n"
+            "layout(location = 1) in vec2 i_texcoord;\n"
             "out vec2 texcoord;\n"
             "uniform ivec2[2] viewcoords;\n"
-            "uniform ivec2[2] objcoords;\n"
-            "uniform vec2[2] texcoords;\n"
             "uniform float depth = 0.0;\n"
             "void main() {\n"
             // convert screen space to NDC
-            // world space (pixels) = opos + position * osize
+            // world space (pixels) = position
             // screen space = world space - vpos
             // 0-1 coordinates = screen space / vsize
             // -1-1 coordinates = 2 * 0-1coords - 1
-            "    gl_Position = vec4((objcoords[0] - viewcoords[0] + position * objcoords[1]) / vec2(viewcoords[1]) * 2.0 - 1.0, 0.0, 1.0);\n"
-            "    gl_Position.y = -gl_Position.y;"
-            "    texcoord = texcoords[0] + position * texcoords[1];\n"
+            "    gl_Position = vec4(vec2(position - viewcoords[0]) / vec2(viewcoords[1]) * vec2(2.0, -2.0) - vec2(1.0, -1.0), 0.0, 1.0);\n"
+            "    texcoord = i_texcoord;\n"
             "}\n",
                    *const FRAGMENT_SHADER_CODE =
             "#version 330 core\n"
@@ -69,17 +68,11 @@ int main(int argc, char **argv) {
         glDeleteShader(fs);
         glUseProgram(prog);
         // set uniforms
-        GLuint vcloc = glGetUniformLocation(prog, "viewcoords"),
-               ocloc = glGetUniformLocation(prog, "objcoords"),
-               tcloc = glGetUniformLocation(prog, "texcoords");
+        GLuint vcloc = glGetUniformLocation(prog, "viewcoords");
         GLint ibuffer[4] = {0, 0, 0, 0};
         ibuffer[2] = window.getWidth();
         ibuffer[3] = window.getHeight();
         glUniform2iv(vcloc, 2, ibuffer);
-        ibuffer[2] = ibuffer[3] = 320;
-        glUniform2iv(ocloc, 2, ibuffer);
-        GLfloat fbuffer[4] = {0.0f, 0.0f, 1.0f, 1.0f};
-        glUniform2fv(tcloc, 2, fbuffer);
         // load texture
         graphics::Texture tex("texture.png");
         tex.activate();
@@ -88,7 +81,29 @@ int main(int argc, char **argv) {
         // game loop
         while (window.running()) {
             window.clear();
-            // update uniform
+            // update VBOs
+            vx_data[0] = 0;
+            vx_data[1] = 0;
+            vx_data[2] = 320;
+            vx_data[3] = 0;
+            vx_data[4] = 0;
+            vx_data[5] = 320;
+            vx_data[6] = 320;
+            vx_data[7] = 320;
+            tx_data[0] = 0.0f;
+            tx_data[1] = 0.0f;
+            tx_data[2] = 1.0f;
+            tx_data[3] = 0.0f;
+            tx_data[4] = 0.0f;
+            tx_data[5] = 1.0f;
+            tx_data[6] = 1.0f;
+            tx_data[7] = 1.0f;
+            // upload data
+            glBindBuffer(GL_ARRAY_BUFFER, v_vbo);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof vx_data, vx_data);
+            glBindBuffer(GL_ARRAY_BUFFER, t_vbo);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof tx_data, tx_data);
+            // update viewport
             ibuffer[2] = window.getWidth();
             ibuffer[3] = window.getHeight();
             glUniform2iv(vcloc, 2, ibuffer);
@@ -98,7 +113,8 @@ int main(int argc, char **argv) {
             window.swapBuffers();
             window.waitEvents();
         }
-        glDeleteBuffers(1, &vbo);
+        glDeleteBuffers(1, &v_vbo);
+        glDeleteBuffers(1, &t_vbo);
         glDeleteVertexArrays(1, &vao);
     } catch (const graphics::WindowCreationError &e) {
         LOG_ERR(e.what());
