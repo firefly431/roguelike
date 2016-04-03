@@ -26,7 +26,7 @@ namespace graphics {
         glfwMakeContextCurrent(window);
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        GLFWWindow *win = reinterpret_cast<GLFWWindow *>(glfwGetWindowUserPointer(window));
+        GLFWWindow *win = static_cast<GLFWWindow *>(glfwGetWindowUserPointer(window));
         win->width = width;
         win->height = height;
         // restore the old context

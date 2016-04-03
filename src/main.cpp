@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
         GLint vx_data[16];
-        GLfloat *const tx_data = static_cast<GLfloat *>(vx_data + 8);
+        GLfloat *const tx_data = reinterpret_cast<GLfloat *>(vx_data + 8);
         GLuint v_vbo;
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
