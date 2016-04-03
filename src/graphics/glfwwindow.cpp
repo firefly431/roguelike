@@ -26,11 +26,14 @@ namespace graphics {
         glfwMakeContextCurrent(window);
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
+        GLFWWindow *win = reinterpret_cast<GLFWWindow *>(glfwGetWindowUserPointer(window));
+        win->width = width;
+        win->height = height;
         // restore the old context
         glfwMakeContextCurrent(old_context);
     }
 
-    GLFWWindow::GLFWWindow() : window(nullptr) {
+    GLFWWindow::GLFWWindow() : window(nullptr), width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT) {
         // initialize GLFW
         glfwSetErrorCallback(GLFWWindow::error_callback);
         if (!glfwInit()) {
@@ -46,6 +49,7 @@ namespace graphics {
         auto old_context = glfwGetCurrentContext();
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
+        glfwSetWindowUserPointer(window, this);
         glfwSetKeyCallback(window, GLFWWindow::key_callback);
         glfwSetCharCallback(window, GLFWWindow::char_callback);
         glfwSetWindowSizeCallback(window, GLFWWindow::resize_callback);
@@ -58,5 +62,6 @@ namespace graphics {
         }
         // restore the old context
         glfwMakeContextCurrent(old_context);
+        GLFWWindow::resize_callback(window, 0, 0);
     }
 }

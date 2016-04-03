@@ -67,6 +67,7 @@ Texture rendering:
     * `ivec2[]`
       * Viewport position
       * Viewport size
+    * `ivec2[]`
       * Object position (in pixels)
       * Object size (in pixels)
     * `vec2[]`

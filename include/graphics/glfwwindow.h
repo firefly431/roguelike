@@ -10,6 +10,7 @@ namespace graphics {
     class GLFWWindow {
         static bool errored;
         GLFWwindow *window;
+        int width, height;
 
         static void error_callback(int error, const char *description);
         static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -24,6 +25,8 @@ namespace graphics {
         void clear() {glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);} // maybe move to graphics namespace
         void swapBuffers() {glfwSwapBuffers(window);}
         void waitEvents() {glfwWaitEvents();}
+        int getWidth() {return width;}
+        int getHeight() {return height;}
     };
 }
 
