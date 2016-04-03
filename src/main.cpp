@@ -12,20 +12,16 @@ int main(int argc, char **argv) {
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
-        GLint vx_data[8];
-        GLfloat tx_data[8];
+        GLint vx_data[16];
+        GLfloat *const tx_data = static_cast<GLfloat *>(vx_data + 8);
         GLuint v_vbo;
-        GLuint t_vbo;
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glGenBuffers(1, &v_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, v_vbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof vx_data, nullptr, GL_STREAM_DRAW);
         glVertexAttribIPointer(0, 2, GL_INT, 0, 0);
-        glGenBuffers(1, &t_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, t_vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof tx_data, nullptr, GL_STREAM_DRAW);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, static_cast<GLvoid *>(static_cast<GLint *>(0) + 8));
         GLuint vs = glCreateShader(GL_VERTEX_SHADER);
         GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
         const char *const VERTEX_SHADER_CODE =
@@ -101,8 +97,6 @@ int main(int argc, char **argv) {
             // upload data
             glBindBuffer(GL_ARRAY_BUFFER, v_vbo);
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof vx_data, vx_data);
-            glBindBuffer(GL_ARRAY_BUFFER, t_vbo);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof tx_data, tx_data);
             // update viewport
             ibuffer[2] = window.getWidth();
             ibuffer[3] = window.getHeight();
@@ -114,7 +108,6 @@ int main(int argc, char **argv) {
             window.waitEvents();
         }
         glDeleteBuffers(1, &v_vbo);
-        glDeleteBuffers(1, &t_vbo);
         glDeleteVertexArrays(1, &vao);
     } catch (const graphics::WindowCreationError &e) {
         LOG_ERR(e.what());
