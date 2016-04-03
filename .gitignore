@@ -30,3 +30,6 @@ build/
 # Vim files
 *~
 *.swp
+
+# apitrace files
+*.trace
