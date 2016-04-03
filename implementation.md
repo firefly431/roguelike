@@ -15,7 +15,7 @@ Systems
   * Input status update (movement and collision)
   * Rendering
 
-Components (all have `id` field)
+Components ~~(all have `id` field)~~ (unnecessary since they are array indices)
   * Information (player can inspect objects if they have collision)
   * Collision (tile x, y, size)
   * Input (probably a tagged union)
