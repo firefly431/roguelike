@@ -62,16 +62,15 @@ To center the screen:
   * Else center display on player
 
 Texture rendering:
-  * One VAO and VBO used, containing (0, 0), (1, 0), (1, 1), and (0, 1).
-  * Many uniforms pass in necessary information
+  * One VAO and VBO used, containing the vertex positions (in world space); updated many times a frame to render each object
+  * Uniforms to pass in viewport
     * `ivec2[]`
       * Viewport position
       * Viewport size
-    * `ivec2[]`
-      * Object position (in pixels)
-      * Object size (in pixels)
-    * `vec2[]`
-      * Texture position
-      * Texture size
     * `float` for depth
     * `sampler2D` texture
+  * Attributes to pass in object and texture position
+    * Object position (in pixels)
+    * Object size (in pixels)
+    * Texture position
+    * Texture size
