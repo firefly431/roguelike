@@ -30,8 +30,8 @@ int main(int argc, char **argv) {
             glUniform2iv(ctx.getViewportLocation(), 2, ibuffer);
             // draw
             window.clear();
-            sprite.setPosition((int)(std::cos(t) * 100.0f + 100.0f), (int)(std::sin(t) * 100.0f + 100.0f));
-            sprite.draw();
+            sprite.setPosition(static_cast<int>(std::cos(t) * 100.0f + 100.0f), static_cast<int>(std::sin(t) * 100.0f + 100.0f));
+            sprite.draw(ctx);
             t += 0.05;
             // swap buffers
             window.swapBuffers();

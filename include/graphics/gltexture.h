@@ -15,7 +15,7 @@ namespace graphics {
         GLTexture(const std::string &fname);
         ~GLTexture() {glDeleteTextures(1, &id);}
 
-        void activate() {
+        void activate() const {
             if (GLTexture::activeTexture != id) {
                 glBindTexture(GL_TEXTURE_2D, id);
                 GLTexture::activeTexture = id;

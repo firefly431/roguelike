@@ -7,13 +7,11 @@ namespace graphics {
         setTexCoords(tx, ty, tw, th);
     }
 
-    void GLSprite::draw(const RenderContext &ctx) const {
+    void GLSprite::draw(const GLRenderContext &ctx) const {
         tex.activate();
         // upload data
-        data[2] = data[0] + width;
-        data[3] = data[1] + height;
         ctx.activateVBO();
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof vx_data, vx_data);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof data, data);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
