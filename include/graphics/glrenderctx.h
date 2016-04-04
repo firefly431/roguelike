@@ -18,13 +18,13 @@ namespace graphics {
     public:
         GLRenderContext();
         ~GLRenderContext();
-        void activateVAO() {glBindVertexArray(vao);}
-        static void deactivateVAO() {glBindVertexArray(0);}
-        void activateVBO() {glBindBuffer(GL_ARRAY_BUFFER, vbo);}
-        static void deactivateVBO() {glBindBuffer(GL_ARRAY_BUFFER, 0);}
-        void activateProgram() {glUseProgram(prog);}
-        static void deactivateProgram() {glUseProgram(0);}
-        GLuint getViewportLocation() {return vcloc;}
+        void activateVAO() const {glBindVertexArray(vao);}
+        static void deactivateVAO() const {glBindVertexArray(0);}
+        void activateVBO() const {glBindBuffer(GL_ARRAY_BUFFER, vbo);}
+        static void deactivateVBO() const {glBindBuffer(GL_ARRAY_BUFFER, 0);}
+        void activateProgram() const {glUseProgram(prog);}
+        static void deactivateProgram() const {glUseProgram(0);}
+        GLuint getViewportLocation() const {return vcloc;}
     };
 }
 
