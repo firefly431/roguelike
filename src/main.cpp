@@ -107,6 +107,7 @@ int main(int argc, char **argv) {
             window.swapBuffers();
             window.waitEvents();
         }
+        glDeleteProgram(prog);
         glDeleteBuffers(1, &v_vbo);
         glDeleteVertexArrays(1, &vao);
     } catch (const graphics::WindowCreationError &e) {
