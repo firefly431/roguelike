@@ -1,13 +1,22 @@
+#include <cstring>
 #include <random>
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <queue>
+#include <algorithm>
+
+using std::memset;
+
+struct s_point {
+    unsigned int y, x;
+};
 
 int main(int argc, char **argv) {
     const unsigned int WIDTH = 31, HEIGHT = 21;
     const unsigned int NTRIES = 500, NROOMS = 10;
     int grid[WIDTH * HEIGHT] = {0};
-    int roompts[NROOMS * 2] = {0}; // (y, x)
+    unsigned int roompts[NROOMS * 2] = {0}; // (y, x)
     // random
     std::mt19937 mt((std::random_device()()));
     // 0 = wall, 1+ = room, -1 = corridor
@@ -55,9 +64,8 @@ overlap:;
     while (true) {
         unsigned int cx = 0, cy = 0;
         // find an empty cell with a visited neighbor
-        std::cout << "Hunting" << std::endl;
-        for (unsigned int y = 1; y < HEIGHT - 1; y += 2) {
-            for (unsigned int x = 1; x < WIDTH - 1; x += 2) {
+        for (unsigned int y = 1; y < HEIGHT - 1u; y += 2) {
+            for (unsigned int x = 1; x < WIDTH - 1u; x += 2) {
                 if (!grid[y * WIDTH + x]) {
                     if (x > 1 && grid[y * WIDTH + x - 2] == -1)
                         grid[y * WIDTH + x - 1] = -1;
@@ -131,52 +139,72 @@ found:;
         }
     }
     // connect rooms together
-    std::vector<struct s_point {unsigned int y, x;}> connectors;
+    std::vector<s_point> connectors;
     bool merged[WIDTH * HEIGHT] = {0};
     const auto &grid_cap = grid;
     const auto &merged_cap = merged;
-    auto useless = [&grid_cap, &merged_cap, WIDTH](const s_point &c) {
+    std::ofstream mergelog("mergelog.txt");
+    auto useless = [&grid_cap, &merged_cap, WIDTH](const s_point &c) -> bool {
         const auto &grid = grid_cap;
         const auto &merged = merged_cap;
-        const int x = c.x, y = c.y;
+        const unsigned int x = c.x, y = c.y;
         int found1 = 0, found2 = 0;
         bool foundwall = false;
-        if (x > 1 && grid[y * WIDTH + x - 1] && !merged[t * WIDTH + x - 1])
+        if (x > 1 && grid[y * WIDTH + x - 1]) {
             if (grid[y * WIDTH + x - 1] > 0)
-                if (found1 > 0) found2 = grid[y * WIDTH + x - 1];
-                else found1 = grid[y * WIDTH + x - 1];
+                if (!merged[y * WIDTH + x - 1])
+                    if (found1 > 0) found2 = grid[y * WIDTH + x - 1];
+                    else found1 = grid[y * WIDTH + x - 1];
+                else foundwall = true;
             else foundwall = true;
-        if (y > 1 && grid[(y - 1) * WIDTH + x] && !merged[(y - 1) * WIDTH + x])
+        }
+        if (found2 == found1) found2 = 0;
+        if (y > 1 && grid[(y - 1) * WIDTH + x]) {
             if (grid[(y - 1) * WIDTH + x] > 0)
-                if (found1 > 0) found2 = grid[(y - 1) * WIDTH + x];
-                else found1 = grid[(y - 1) * WIDTH + x];
+                if (!merged[(y - 1) * WIDTH + x])
+                    if (found1 > 0) found2 = grid[(y - 1) * WIDTH + x];
+                    else found1 = grid[(y - 1) * WIDTH + x];
+                else foundwall = true;
             else foundwall = true;
-        if (x < WIDTH - 1 && grid[y * WIDTH + x + 1] && !merged[y * WIDTH + x + 1])
+        }
+        if (found2 == found1) found2 = 0;
+        if (x < WIDTH - 1u && grid[y * WIDTH + x + 1]) {
             if (grid[y * WIDTH + x + 1] > 0)
-                if (found1 > 0) found2 = grid[y * WIDTH + x + 1];
-                else found1 = grid[y * WIDTH + x + 1];
+                if (!merged[y * WIDTH + x + 1])
+                    if (found1 > 0) found2 = grid[y * WIDTH + x + 1];
+                    else found1 = grid[y * WIDTH + x + 1];
+                else foundwall = true;
             else foundwall = true;
-        if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x] && !merged[(y + 1) * WIDTH + x])
+        }
+        if (found2 == found1) found2 = 0;
+        if (y < HEIGHT - 1u && grid[(y + 1) * WIDTH + x]) {
             if (grid[(y + 1) * WIDTH + x] > 0)
-                if (found1 > 0) found2 = grid[(y + 1) * WIDTH + x];
-                else found1 = grid[(y + 1) * WIDTH + x];
+                if (!merged[(y + 1) * WIDTH + x])
+                    if (found1 > 0) found2 = grid[(y + 1) * WIDTH + x];
+                    else found1 = grid[(y + 1) * WIDTH + x];
+                else foundwall = true;
             else foundwall = true;
+        }
+        if (found2 == found1) found2 = 0;
         return !(found1 && (found2 || foundwall));
     };
-    auto touches_merged = [&grid_cap, &merged_cap, WIDTH](const s_point &c) {
-        const auto &grid = grid_cap;
+    auto touches_merged = [&merged_cap, WIDTH](const s_point &c) -> bool {
         const auto &merged = merged_cap;
-        const int x = c.x, y = c.y;
-        if (x > 1 && grid[y * WIDTH + x - 1] && merged[y * WIDTH + x - 1])
+        const unsigned int x = c.x, y = c.y;
+        if (x > 1 && merged[y * WIDTH + x - 1]) {
             return true;
-        if (y > 1 && grid[(y - 1) * WIDTH + x] && merged[(y - 1) * WIDTH + x])
+        }
+        if (y > 1 && merged[(y - 1) * WIDTH + x]) {
             return true;
-        if (x < WIDTH - 1 && grid[y * WIDTH + x + 1] && merged[y * WIDTH + x + 1])
+        }
+        if (x < WIDTH - 1u && merged[y * WIDTH + x + 1]) {
             return true;
-        if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x] && merged[(y + 1) * WIDTH + x])
+        }
+        if (y < HEIGHT - 1u && merged[(y + 1) * WIDTH + x]) {
             return true;
+        }
         return false;
-    }
+    };
     for (unsigned int y = 0; y < HEIGHT; y++) {
         for (unsigned int x = 0; x < WIDTH; x++) {
             // check if it connects two rooms together
@@ -187,8 +215,9 @@ found:;
         }
     }
     std::shuffle(connectors.begin(), connectors.end(), mt);
+    bool isconnector[WIDTH * HEIGHT] = {0};
     // merge the first room
-    auto floodfill = [&grid_cap, &merged, WIDTH](const s_point &c) {
+    auto floodfill = [&grid_cap, &merged, &mergelog, &touches_merged, WIDTH](const s_point &c) {
         const auto &grid = grid_cap;
         std::queue<s_point> Q;
         Q.push(c);
@@ -196,7 +225,7 @@ found:;
             const auto p = Q.front();
             Q.pop();
             merged[p.y * WIDTH + p.x] = true;
-            const int x = p.x, y = p.y;
+            const unsigned int x = p.x, y = p.y;
             // add neighbors
             if (x > 1 && grid[y * WIDTH + x - 1] && !merged[y * WIDTH + x - 1]) {
                 merged[y * WIDTH + x - 1] = true;
@@ -206,16 +235,42 @@ found:;
                 merged[(y - 1) * WIDTH + x] = true;
                 Q.emplace(s_point {y - 1, x});
             }
-            if (x < WIDTH - 1 && grid[y * WIDTH + x + 1] && !merged[y * WIDTH + x + 1]) {
+            if (x < WIDTH - 1u && grid[y * WIDTH + x + 1] && !merged[y * WIDTH + x + 1]) {
                 merged[y * WIDTH + x + 1] = true;
                 Q.emplace(s_point {y, x + 1});
             }
-            if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x] && !merged[(y + 1) * WIDTH + x]) {
+            if (y < HEIGHT - 1u && grid[(y + 1) * WIDTH + x] && !merged[(y + 1) * WIDTH + x]) {
                 merged[(y + 1) * WIDTH + x] = true;
                 Q.emplace(s_point {y + 1, x});
             }
         }
-    }
+        s_point pt;
+        for (unsigned int i = 0; i < HEIGHT; i++) {
+            for (unsigned int j = 0; j < WIDTH; j++) {
+                pt.y = i;
+                pt.x = j;
+                mergelog << (i == c.y && j == c.x ? '*' : merged[i * WIDTH + j] ? '.' : touches_merged(pt) ? '=' : '#');
+            }
+            mergelog << ' ';
+            for (unsigned int j = 0; j < WIDTH; j++) {
+                int v = grid[i * WIDTH + j];
+                char c;
+                if (v == 0)
+                    c = '#';
+                else if (1 <= v && v <= 9)
+                    c = v + '0';
+                else if (10 <= v && v <= 35)
+                    c = v + 'A' - 10;
+                else if (v < 0)
+                    c = ' ';
+                else
+                    c = '?';
+                mergelog << c;
+            }
+            mergelog << std::endl;
+        }
+        mergelog << std::endl;
+    };
     {
         s_point p = {roompts[0], roompts[1]};
         floodfill(p);
@@ -228,11 +283,43 @@ found:;
             break;
         }
         auto conn = *conn_;
+        if (!touches_merged(conn)) {
+            std::cerr << "WTF" << std::endl;
+        }
+        connectors.erase(conn_); // probably unnecessary
         grid[conn.y * WIDTH + conn.x] = -1;
         floodfill(conn);
-        std::bernoulli_distribution dist(0.1);
-        std::remove_if(connectors.begin(), connectors.end(), [&dist, &mt](const s_point &p) {useless(p) && !dist(mt)});
+        std::bernoulli_distribution dist(0.0);
+        //std::remove_if(connectors.begin(), connectors.end(), [&dist, &mt, &useless](const s_point &p) {return useless(p) && !dist(mt);});
+        connectors.erase(std::remove_if(connectors.begin(), connectors.end(), useless), connectors.end());
+        memset(isconnector, 0, sizeof isconnector);
+        for (const auto &a : connectors) {
+            if (isconnector[a.y * WIDTH + a.x]) std::cerr << "Error" << std::endl;
+            isconnector[a.y * WIDTH + a.x] = true;
+        }
+        for (unsigned int i = 0; i < HEIGHT; i++) {
+            for (unsigned int j = 0; j < WIDTH; j++) {
+                int v = grid[i * WIDTH + j];
+                char c;
+                if (v == 0)
+                    c = isconnector[i * WIDTH + j] ? '=' : '#';
+                else if (1 <= v && v <= 9)
+                    c = v + '0';
+                else if (10 <= v && v <= 35)
+                    c = v + 'A' - 10;
+                else if (v < 0)
+                    c = ' ';
+                else
+                    c = '?';
+                mergelog << c;
+            }
+            mergelog << std::endl;
+        }
+        mergelog << std::endl;
+        mergelog << "Merges:" << std::endl;
+        mergelog << std::endl;
     }
+    mergelog.close();
     // output maze
     std::ofstream file("maze.txt");
     for (unsigned int i = 0; i < HEIGHT; i++) {
