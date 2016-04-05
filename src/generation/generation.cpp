@@ -13,8 +13,8 @@ struct s_point {
 };
 
 int main(int argc, char **argv) {
-    const unsigned int WIDTH = 31, HEIGHT = 21;
-    const unsigned int NTRIES = 500, NROOMS = 10;
+    const unsigned int WIDTH = 301, HEIGHT = 201;
+    const unsigned int NTRIES = 500, NROOMS = 40;
     int grid[WIDTH * HEIGHT] = {0};
     unsigned int roompts[NROOMS * 2] = {0}; // (y, x)
     // random
