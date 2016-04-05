@@ -1,11 +1,13 @@
 #include <random>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 int main(int argc, char **argv) {
     const unsigned int WIDTH = 31, HEIGHT = 21;
     const unsigned int NTRIES = 500, NROOMS = 10;
     int grid[WIDTH * HEIGHT] = {0};
+    int roompts[NROOMS * 2] = {0}; // (y, x)
     // random
     std::mt19937 mt((std::random_device()()));
     // 0 = wall, 1+ = room, -1 = corridor
@@ -33,6 +35,8 @@ int main(int argc, char **argv) {
                     grid[(y + j) * WIDTH + x + k] = nrooms;
                 }
             }
+            roompts[2 * nrooms - 2] = y;
+            roompts[2 * nrooms - 1] = x;
         }
 overlap:;
     }
@@ -126,7 +130,57 @@ found:;
             if (!found) break; // no neighbors
         }
     }
-    // TODO: connect rooms together
+    // connect rooms together
+    std::vector<struct s_point {unsigned int y, x;}> connectors;
+    bool merged[NROOMS] = {0};
+    const auto &grid_cap = grid;
+    const auto &merged_cap = merged;
+    auto connects = [&grid_cap, &merged_cap](const s_point &c) {
+        const auto &grid = grid_cap;
+        const auto &merged = merged_cap;
+        const int x = c.x, y = c.y;
+        int found1 = 0, found2 = 0;
+        bool foundwall = false;
+        if (x > 1 && grid[y * WIDTH + x - 1])
+            if (grid[y * WIDTH + x - 1] > 0)
+                if (!merged[grid[y * WIDTH + x - 1] - 1])
+                    if (found1 > 0) found2 = grid[y * WIDTH + x - 1];
+                    else found1 = grid[y * WIDTH + x - 1];
+                else;
+            else foundwall = true;
+        if (y > 1 && grid[(y - 1) * WIDTH + x])
+            if (grid[(y - 1) * WIDTH + x] > 0)
+                if (!merged[grid[(y - 1) * WIDTH + x] - 1])
+                    if (found1 > 0) found2 = grid[(y - 1) * WIDTH + x];
+                    else found1 = grid[(y - 1) * WIDTH + x];
+                else;
+            else foundwall = true;
+        if (x < WIDTH - 1 && grid[y * WIDTH + x + 1])
+            if (grid[y * WIDTH + x + 1] > 0)
+                if (!merged[grid[y * WIDTH + x + 1] - 1])
+                    if (found1 > 0) found2 = grid[y * WIDTH + x + 1];
+                    else found1 = grid[y * WIDTH + x + 1];
+                else;
+            else foundwall = true;
+        if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x])
+            if (grid[(y + 1) * WIDTH + x] > 0)
+                if (!merged[grid[(y + 1) * WIDTH + x] - 1])
+                    if (found1 > 0) found2 = grid[(y + 1) * WIDTH + x];
+                    else found1 = grid[(y + 1) * WIDTH + x];
+                else;
+            else foundwall = true;
+        return found1 && (found2 || foundwall);
+    };
+    for (unsigned int y = 0; y < HEIGHT; y++) {
+        for (unsigned int x = 0; x < WIDTH; x++) {
+            // check if it connects two rooms together
+            if (grid[y * WIDTH + x]) continue;
+            s_point pt = {y, x};
+            if (connects(pt))
+                connectors.push_back(pt);
+        }
+    }
+    // TODO: connect
     // output maze
     std::ofstream file("maze.txt");
     for (unsigned int i = 0; i < HEIGHT; i++) {
