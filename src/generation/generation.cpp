@@ -132,55 +132,107 @@ found:;
     }
     // connect rooms together
     std::vector<struct s_point {unsigned int y, x;}> connectors;
-    bool merged[NROOMS] = {0};
+    bool merged[WIDTH * HEIGHT] = {0};
     const auto &grid_cap = grid;
     const auto &merged_cap = merged;
-    auto connects = [&grid_cap, &merged_cap](const s_point &c) {
+    auto useless = [&grid_cap, &merged_cap, WIDTH](const s_point &c) {
         const auto &grid = grid_cap;
         const auto &merged = merged_cap;
         const int x = c.x, y = c.y;
         int found1 = 0, found2 = 0;
         bool foundwall = false;
-        if (x > 1 && grid[y * WIDTH + x - 1])
+        if (x > 1 && grid[y * WIDTH + x - 1] && !merged[t * WIDTH + x - 1])
             if (grid[y * WIDTH + x - 1] > 0)
-                if (!merged[grid[y * WIDTH + x - 1] - 1])
-                    if (found1 > 0) found2 = grid[y * WIDTH + x - 1];
-                    else found1 = grid[y * WIDTH + x - 1];
-                else;
+                if (found1 > 0) found2 = grid[y * WIDTH + x - 1];
+                else found1 = grid[y * WIDTH + x - 1];
             else foundwall = true;
-        if (y > 1 && grid[(y - 1) * WIDTH + x])
+        if (y > 1 && grid[(y - 1) * WIDTH + x] && !merged[(y - 1) * WIDTH + x])
             if (grid[(y - 1) * WIDTH + x] > 0)
-                if (!merged[grid[(y - 1) * WIDTH + x] - 1])
-                    if (found1 > 0) found2 = grid[(y - 1) * WIDTH + x];
-                    else found1 = grid[(y - 1) * WIDTH + x];
-                else;
+                if (found1 > 0) found2 = grid[(y - 1) * WIDTH + x];
+                else found1 = grid[(y - 1) * WIDTH + x];
             else foundwall = true;
-        if (x < WIDTH - 1 && grid[y * WIDTH + x + 1])
+        if (x < WIDTH - 1 && grid[y * WIDTH + x + 1] && !merged[y * WIDTH + x + 1])
             if (grid[y * WIDTH + x + 1] > 0)
-                if (!merged[grid[y * WIDTH + x + 1] - 1])
-                    if (found1 > 0) found2 = grid[y * WIDTH + x + 1];
-                    else found1 = grid[y * WIDTH + x + 1];
-                else;
+                if (found1 > 0) found2 = grid[y * WIDTH + x + 1];
+                else found1 = grid[y * WIDTH + x + 1];
             else foundwall = true;
-        if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x])
+        if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x] && !merged[(y + 1) * WIDTH + x])
             if (grid[(y + 1) * WIDTH + x] > 0)
-                if (!merged[grid[(y + 1) * WIDTH + x] - 1])
-                    if (found1 > 0) found2 = grid[(y + 1) * WIDTH + x];
-                    else found1 = grid[(y + 1) * WIDTH + x];
-                else;
+                if (found1 > 0) found2 = grid[(y + 1) * WIDTH + x];
+                else found1 = grid[(y + 1) * WIDTH + x];
             else foundwall = true;
-        return found1 && (found2 || foundwall);
+        return !(found1 && (found2 || foundwall));
     };
+    auto touches_merged = [&grid_cap, &merged_cap, WIDTH](const s_point &c) {
+        const auto &grid = grid_cap;
+        const auto &merged = merged_cap;
+        const int x = c.x, y = c.y;
+        if (x > 1 && grid[y * WIDTH + x - 1] && merged[y * WIDTH + x - 1])
+            return true;
+        if (y > 1 && grid[(y - 1) * WIDTH + x] && merged[(y - 1) * WIDTH + x])
+            return true;
+        if (x < WIDTH - 1 && grid[y * WIDTH + x + 1] && merged[y * WIDTH + x + 1])
+            return true;
+        if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x] && merged[(y + 1) * WIDTH + x])
+            return true;
+        return false;
+    }
     for (unsigned int y = 0; y < HEIGHT; y++) {
         for (unsigned int x = 0; x < WIDTH; x++) {
             // check if it connects two rooms together
             if (grid[y * WIDTH + x]) continue;
             s_point pt = {y, x};
-            if (connects(pt))
+            if (!useless(pt))
                 connectors.push_back(pt);
         }
     }
-    // TODO: connect
+    std::shuffle(connectors.begin(), connectors.end(), mt);
+    // merge the first room
+    auto floodfill = [&grid_cap, &merged, WIDTH](const s_point &c) {
+        const auto &grid = grid_cap;
+        std::queue<s_point> Q;
+        Q.push(c);
+        while (!Q.empty()) {
+            const auto p = Q.front();
+            Q.pop();
+            merged[p.y * WIDTH + p.x] = true;
+            const int x = p.x, y = p.y;
+            // add neighbors
+            if (x > 1 && grid[y * WIDTH + x - 1] && !merged[y * WIDTH + x - 1]) {
+                merged[y * WIDTH + x - 1] = true;
+                Q.emplace(s_point {y, x - 1});
+            }
+            if (y > 1 && grid[(y - 1) * WIDTH + x] && !merged[(y - 1) * WIDTH + x]) {
+                merged[(y - 1) * WIDTH + x] = true;
+                Q.emplace(s_point {y - 1, x});
+            }
+            if (x < WIDTH - 1 && grid[y * WIDTH + x + 1] && !merged[y * WIDTH + x + 1]) {
+                merged[y * WIDTH + x + 1] = true;
+                Q.emplace(s_point {y, x + 1});
+            }
+            if (y < HEIGHT - 1 && grid[(y + 1) * WIDTH + x] && !merged[(y + 1) * WIDTH + x]) {
+                merged[(y + 1) * WIDTH + x] = true;
+                Q.emplace(s_point {y + 1, x});
+            }
+        }
+    }
+    {
+        s_point p = {roompts[0], roompts[1]};
+        floodfill(p);
+    }
+    // activate connectors
+    while (!connectors.empty()) {
+        auto conn_ = std::find_if(connectors.begin(), connectors.end(), touches_merged);
+        if (conn_ == connectors.end()) {
+            // wtf????? quite certain this is impossible
+            break;
+        }
+        auto conn = *conn_;
+        grid[conn.y * WIDTH + conn.x] = -1;
+        floodfill(conn);
+        std::bernoulli_distribution dist(0.1);
+        std::remove_if(connectors.begin(), connectors.end(), [&dist, &mt](const s_point &p) {useless(p) && !dist(mt)});
+    }
     // output maze
     std::ofstream file("maze.txt");
     for (unsigned int i = 0; i < HEIGHT; i++) {
