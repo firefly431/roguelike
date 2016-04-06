@@ -89,17 +89,24 @@ found:;
             grid[cy * WIDTH + cx] = -1;
             // advance in random direction
             std::uniform_int_distribution<unsigned int> compass(0, 3),
-                                                        turn(1, 3);
+                                                        turn(0, 5);
             unsigned int sdir = compass(mt);
             // turn directions: 0 (same), 1 (right), 3 (left)
-            unsigned int dirs[] = {turn(mt), 0, 0};
-            unsigned int &first = dirs[0],
-                         &second = dirs[1],
-                         &third = dirs[2];
-            if (first == 2) first = 0;
-            first = (first + sdir) & 3;
-            second = first ^ turn(mt); // flip at least 1 bit
-            third = (4 - (first - sdir) - (second - sdir)) & 3;
+            unsigned int dirs[];
+            switch (turn) {
+            case 0:
+                dirs[0] = 0; dirs[1] = 1; dirs[2] = 3; break;
+            case 1:
+                dirs[0] = 0; dirs[1] = 3; dirs[2] = 1; break;
+            case 2:
+                dirs[0] = 1; dirs[1] = 0; dirs[2] = 3; break;
+            case 3:
+                dirs[0] = 1; dirs[1] = 3; dirs[2] = 0; break;
+            case 4:
+                dirs[0] = 3; dirs[1] = 0; dirs[2] = 1; break;
+            case 5:
+                dirs[0] = 3; dirs[1] = 1; dirs[2] = 0; break;
+            }
             bool found = false;
             for (int i = 0; i < 3; i++) {
                 int dir = dirs[i];
