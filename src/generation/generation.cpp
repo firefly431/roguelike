@@ -127,9 +127,11 @@ namespace generation {
                 else if (10 <= v && v <= 35)
                     ch = v + 'A' - 10;
                 else if (v == -1)
-                    ch = ' ';
+                    ch = '.';
                 else if (v == -2)
                     ch = ':';
+                else if (v == -3)
+                    ch = '!';
                 else
                     ch = '?';
                 file << ch;
@@ -139,8 +141,8 @@ namespace generation {
         file.close();
     }
 
-    void Dungeon::generate(unsigned int nrooms, unsigned int ntries) {
-        // 0 = wall, 1+ = room, -1 = corridor
+    void Dungeon::generate(unsigned int nrooms, unsigned int ntries, double extra_door_p, double dead_end_p) {
+        // 0 = wall, 1+ = room, -1 = corridor, -2 = door, -3 = dead end
         // generate rooms
         std::uniform_int_distribution<unsigned int> sdist(1, 5);
         for (unsigned int i = 0; i < ntries && roompts.size() < nrooms; i++) {
@@ -281,6 +283,7 @@ namespace generation {
             floodfill(p);
         }
         // activate connectors
+        std::bernoulli_distribution door_dist(extra_door_p);
         while (!connectors.empty()) {
             auto conn_ = std::find_if(connectors.begin(), connectors.end(), [this](const Point &p) {return touches_merged(p);});
             if (conn_ == connectors.end()) {
@@ -291,16 +294,46 @@ namespace generation {
             connectors.erase(conn_); // probably unnecessary
             grid[conn.r * width + conn.c] = -2;
             floodfill(conn);
-            std::bernoulli_distribution dist(0.05);
-            connectors.erase(std::remove_if(connectors.begin(), connectors.end(), [this, &dist](const Point &p) {
+            connectors.erase(std::remove_if(connectors.begin(), connectors.end(), [this, &door_dist](const Point &p) {
                 if (!useless(p)) return false;
-                if (dist(mt) && !touches_cleared(p)) {
+                if (door_dist(mt) && !touches_cleared(p)) {
                     grid[p.r * width + p.c] = -2;
                     merged[p.r * width + p.c] = true;
                 }
                 return true;
             }), connectors.end());
         }
+        // remove some dead-ends
+        std::bernoulli_distribution dead_end_dist(dead_end_p);
+        bool changed = false;
+        do {
+            for (unsigned int r = 0; r < height; r++) {
+                for (unsigned int c = 0; c < width; c++) {
+                    if (grid[r * width + c] != -1) continue;
+                    unsigned int count = 0;
+                    if (c > 1 && grid[r * width + c - 1]) {
+                        count++;
+                    }
+                    if (r > 1 && grid[(r - 1) * width + c]) {
+                        count++;
+                    }
+                    if (c < width - 1u && grid[r * width + c + 1]) {
+                        count++;
+                    }
+                    if (r < height - 1u && grid[(r + 1) * width + c]) {
+                        count++;
+                    }
+                    if (count <= 1) {
+                        if (dead_end_dist(mt)) {
+                            grid[r * width + c] = -3;
+                        } else {
+                            grid[r * width + c] = 0;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        } while (changed);
     }
 }
 

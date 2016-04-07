@@ -22,7 +22,7 @@ namespace generation {
     public:
         Dungeon(unsigned int width, unsigned int height);
         Dungeon(unsigned int width, unsigned int height, std::mt19937::result_type seed);
-        void generate(unsigned int nrooms, unsigned int ntries);
+        void generate(unsigned int nrooms, unsigned int ntries, double extra_door_p = 0.05, double dead_end_p = 0.05);
         void write(const char *fname);
     };
 }
