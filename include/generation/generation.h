@@ -17,6 +17,7 @@ namespace generation {
 
         bool useless(const Point &c) const;
         bool touches_merged(const Point &c);
+        bool touches_cleared(const Point &c);
         void floodfill(const Point &c);
     public:
         Dungeon(unsigned int width, unsigned int height);

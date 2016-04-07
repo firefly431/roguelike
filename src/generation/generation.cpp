@@ -68,6 +68,23 @@ namespace generation {
         return false;
     }
 
+    bool Dungeon::touches_cleared(const Point &p) {
+        const unsigned int r = p.r, c = p.c;
+        if (c > 1 && grid[r * width + c - 1] == -2) {
+            return true;
+        }
+        if (r > 1 && grid[(r - 1) * width + c] == -2) {
+            return true;
+        }
+        if (c < width - 1u && grid[r * width + c + 1] == -2) {
+            return true;
+        }
+        if (r < height - 1u && grid[(r + 1) * width + c] == -2) {
+            return true;
+        }
+        return false;
+    }
+
     void Dungeon::floodfill(const Point &q) {
         std::queue<Point> Q;
         Q.push(q);
@@ -109,8 +126,10 @@ namespace generation {
                     ch = v + '0';
                 else if (10 <= v && v <= 35)
                     ch = v + 'A' - 10;
-                else if (v < 0)
+                else if (v == -1)
                     ch = ' ';
+                else if (v == -2)
+                    ch = ':';
                 else
                     ch = '?';
                 file << ch;
@@ -121,8 +140,6 @@ namespace generation {
     }
 
     void Dungeon::generate(unsigned int nrooms, unsigned int ntries) {
-        // random
-        std::mt19937 mt((std::random_device()()));
         // 0 = wall, 1+ = room, -1 = corridor
         // generate rooms
         std::uniform_int_distribution<unsigned int> sdist(1, 5);
@@ -272,11 +289,17 @@ namespace generation {
             }
             auto conn = *conn_;
             connectors.erase(conn_); // probably unnecessary
-            grid[conn.r * width + conn.c] = -1;
+            grid[conn.r * width + conn.c] = -2;
             floodfill(conn);
-            std::bernoulli_distribution dist(0.0);
-            //std::remove_if(connectors.begin(), connectors.end(), [&dist, &mt, &useless](const Point &p) {return useless(p) && !dist(mt);});
-            connectors.erase(std::remove_if(connectors.begin(), connectors.end(), [this](const Point &p) {return useless(p);}), connectors.end());
+            std::bernoulli_distribution dist(0.05);
+            connectors.erase(std::remove_if(connectors.begin(), connectors.end(), [this, &dist](const Point &p) {
+                if (!useless(p)) return false;
+                if (dist(mt) && !touches_cleared(p)) {
+                    grid[p.r * width + p.c] = -2;
+                    merged[p.r * width + p.c] = true;
+                }
+                return true;
+            }), connectors.end());
         }
     }
 }
