@@ -183,10 +183,13 @@ namespace generation {
         // hunt and kill
         while (true) {
             unsigned int cr = 0, cc = 0;
+            unsigned int er = 0; ec = 0;
             // find an empty cell with a visited neighbor
             for (unsigned int r = 1; r < height - 1u; r += 2) {
                 for (unsigned int c = 1; c < width - 1u; c += 2) {
                     if (!grid[r * width + c]) {
+                        er = r;
+                        ec = c;
                         if (c > 1 && grid[r * width + c - 2] == -1)
                             grid[r * width + c - 1] = -1;
                         else if (r > 1 && grid[(r - 2) * width + c] == -1)
@@ -203,7 +206,11 @@ namespace generation {
                 }
             }
     found:;
-            if (cc == 0) break; // we're done; not found (cc is always odd)
+            if (er == 0) break; // we're done; maze is full
+            if (cr == 0) { // we've floodfilled the section we started in
+                grid[er * width + c] = -1;
+                continue;
+            }
             while (true) {
                 // clear ourselves
                 grid[cr * width + cc] = -1;
