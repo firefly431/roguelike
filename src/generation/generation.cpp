@@ -314,6 +314,7 @@ namespace generation {
         std::bernoulli_distribution dead_end_dist(dead_end_p);
         bool changed = false;
         do {
+            changed = false;
             for (unsigned int r = 0; r < height; r++) {
                 for (unsigned int c = 0; c < width; c++) {
                     if (grid[r * width + c] != -1) continue;
