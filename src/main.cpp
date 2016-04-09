@@ -63,24 +63,18 @@ int main(int argc, char **argv) {
                 map_data[i * 16 +  1] = y * cell_height;
                 *reinterpret_cast<GLfloat *>(&map_data[i * 16 +  2]) = tx * tex_width;
                 *reinterpret_cast<GLfloat *>(&map_data[i * 16 +  3]) = ty * tex_height;
-                map_data[i * 16 +  5] = x * cell_width  + cell_width;
-                map_data[i * 16 +  6] = y * cell_height;
-                *reinterpret_cast<GLfloat *>(&map_data[i * 16 +  7]) = tx * tex_width  + tex_width;
-                *reinterpret_cast<GLfloat *>(&map_data[i * 16 +  8]) = ty * tex_height;
-                map_data[i * 16 +  9] = x * cell_width;
-                map_data[i * 16 + 10] = y * cell_height + cell_height;
-                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 11]) = tx * tex_width;
-                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 12]) = ty * tex_height + tex_height;
-                map_data[i * 16 + 13] = x * cell_width  + cell_width;
-                map_data[i * 16 + 14] = y * cell_height + cell_height;
-                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 15]) = tx * tex_width  + tex_width;
-                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 16]) = ty * tex_height + tex_height;
-                if (i == 0) {
-                    LOG_DEBUG(map_data[i * 16], map_data[i * 16 + 1]);
-                    LOG_DEBUG(map_data[i * 16 + 5], map_data[i * 16 + 1 + 6]);
-                    LOG_DEBUG(map_data[i * 16 + 9], map_data[i * 16 + 1 + 10]);
-                    LOG_DEBUG(map_data[i * 16 + 13], map_data[i * 16 + 1 + 14]);
-                }
+                map_data[i * 16 +  4] = x * cell_width  + cell_width;
+                map_data[i * 16 +  5] = y * cell_height;
+                *reinterpret_cast<GLfloat *>(&map_data[i * 16 +  6]) = tx * tex_width  + tex_width;
+                *reinterpret_cast<GLfloat *>(&map_data[i * 16 +  7]) = ty * tex_height;
+                map_data[i * 16 +  8] = x * cell_width;
+                map_data[i * 16 +  9] = y * cell_height + cell_height;
+                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 10]) = tx * tex_width;
+                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 11]) = ty * tex_height + tex_height;
+                map_data[i * 16 + 12] = x * cell_width  + cell_width;
+                map_data[i * 16 + 13] = y * cell_height + cell_height;
+                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 14]) = tx * tex_width  + tex_width;
+                *reinterpret_cast<GLfloat *>(&map_data[i * 16 + 15]) = ty * tex_height + tex_height;
             }
             // upload data
             glBindBuffer(GL_ARRAY_BUFFER, vbo);

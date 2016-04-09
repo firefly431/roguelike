@@ -5,7 +5,7 @@
 
 namespace Log {
     inline std::ostream &output() { return std::cerr; }
-    inline void do_output() {}
+    inline void do_output() {output() << std::endl;}
     template<typename T, typename ...R>
     inline void do_output(T &&x, R &&...rest) {
         output() << std::forward<T>(x);
