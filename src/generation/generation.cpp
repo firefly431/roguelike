@@ -141,7 +141,7 @@ namespace generation {
         file.close();
     }
 
-    void Dungeon::generate(unsigned int nrooms, unsigned int ntries, double extra_door_p, double dead_end_p) {
+    void Dungeon::generate(unsigned int nrooms, unsigned int ntries, double extra_door_p, double dead_end_p, double straight_p, double straight_second_p) {
         // 0 = wall, 1+ = room, -1 = corridor, -2 = door, -3 = dead end
         // generate rooms
         std::uniform_int_distribution<unsigned int> sdist(1, 5);
@@ -215,12 +215,17 @@ namespace generation {
                 // clear ourselves
                 grid[cr * width + cc] = -1;
                 // advance in random direction
-                std::uniform_int_distribution<unsigned int> compass(0, 3),
-                                                            turn(0, 5);
+                std::uniform_int_distribution<unsigned int> compass(0, 3);
                 unsigned int sdir = compass(mt);
                 // turn directions: 0 (same), 1 (right), 3 (left)
                 unsigned int dirs[3];
-                switch (turn(mt)) {
+                unsigned int turn;
+                if (std::bernoulli_distribution(straight_p)(mt)) {
+                    turn = std::bernoulli_distribution(0.5)(mt) ? 0 : 1;
+                } else {
+                    turn = (std::bernoulli_distribution(0.5)(mt) ? 2 : 4) + std::bernoulli_distribution(straight_second_p)(mt);
+                }
+                switch (turn) {
                 case 0:
                     dirs[0] = (0 + sdir) & 3; dirs[1] = (1 + sdir) & 3; dirs[2] = (3 + sdir) & 3; break;
                 case 1:
