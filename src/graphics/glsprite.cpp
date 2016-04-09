@@ -10,7 +10,6 @@ namespace graphics {
     void GLSprite::draw(const GLRenderContext &ctx) const {
         tex.activate();
         // upload data
-        ctx.activateVBO();
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof data, data);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
