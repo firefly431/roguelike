@@ -118,6 +118,7 @@ int main(int argc, char **argv) {
             glUniform2iv(ctx.getViewportLocation(), 2, ibuffer);
             // draw
             window.clear();
+            graphics::Texture::beginDraw();
             // draw tileset
             glBindVertexArray(vao);
             ts.activate();
