@@ -7,7 +7,7 @@ namespace graphics {
         setTexCoords(tx, ty, tw, th);
     }
 
-    void GLSprite::draw(const GLRenderContext &ctx) const {
+    void GLSprite::draw() const {
         tex.activate();
         // upload data
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof data, data);

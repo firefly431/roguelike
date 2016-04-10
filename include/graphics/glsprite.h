@@ -22,7 +22,7 @@ namespace graphics {
     public:
         GLSprite(const GLTexture &tex, int width, int height, float tx, float ty, float tw, float th);
         // assume VAO and program are already activated (set up for drawing)
-        void draw(const GLRenderContext &ctx) const;
+        void draw() const;
         void setTexCoords(float tx, float ty, float tw, float th);
 
         void setPosition(int x, int y) {data[0] = x; data[1] = y; updatePositionData();};
