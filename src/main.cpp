@@ -23,13 +23,10 @@ int main(int argc, char **argv) {
         // make sprite
         graphics::Sprite sprite(tex, 320, 320, 0.0f, 0.0f, 1.0f, 1.0f);
         // make tileset data
-        const char map_data[] = "#####"
-                                "#   #"
-                                "# # #"
-                                "#   #"
-                                "#####";
-        const unsigned int width = 5, height = 5;
-        graphics::Tilemap map(std::begin(map_data), std::end(map_data), width, height, ts, ctx);
+        generation::Dungeon dungeon(17, 15);
+        dungeon.generate(5, 500);
+        auto map_data = dungeon.getTiles();
+        graphics::Tilemap map(std::begin(map_data), std::end(map_data), dungeon.getWidth(), dungeon.getHeight(), 8, 8, 1, 2, ts, ctx);
         // simple animation
         float t = 0.0f;
         // game loop

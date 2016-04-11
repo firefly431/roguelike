@@ -9,13 +9,13 @@
 
 namespace graphics {
     class GLTilemap {
-        typedef char Index; // no one's going to use more than 256 tiles, right?
+        typedef unsigned char Index; // no one's going to use more than 256 tiles, right?
         GLTexture &tex;
         unsigned int width, height;
         std::vector<Index> map;
         GLuint vao, vbo, ibo;
     public:
-        template<typename Iterator> GLTilemap(Iterator begin, Iterator end, unsigned int width, unsigned int height, GLTexture &tex, const GLRenderContext &ctx) : tex(tex), width(width), height(height), map(begin, end), vao(0), vbo(0), ibo(0) {
+        template<typename Iterator> GLTilemap(Iterator begin, Iterator end, unsigned int width, unsigned int height, unsigned int cell_width, unsigned int cell_height, unsigned int tex_rows, unsigned int tex_cols, GLTexture &tex, const GLRenderContext &ctx) : tex(tex), width(width), height(height), map(begin, end), vao(0), vbo(0), ibo(0) {
             glGenVertexArrays(1, &vao);
             glBindVertexArray(vao);
             // also enable the same shader
@@ -28,23 +28,13 @@ namespace graphics {
             // width * height * 4 corners/cell * (2 ints + 2 floats)/corner * 4 bytes = width * height * 64
             {
                 GLint *map_data = static_cast<GLint *>(std::malloc(width * height * 64));
-                const unsigned int cell_width = 8, cell_height = 8;
-                const unsigned int tex_rows = 1, tex_cols = 2;
                 const float tex_width = 1.0f / tex_cols, tex_height = 1.0f / tex_rows;
                 for (unsigned int i = 0; i < width * height; i++) {
                     unsigned int y = i / width, x = i % width;
                     unsigned int tx = 0, ty = 0;
                     char c = map[i];
-                    switch (c) {
-                    case '#':
-                        tx = 0;
-                        ty = 0;
-                        break;
-                    case ' ':
-                        tx = 1;
-                        ty = 0;
-                        break;
-                    }
+                    tx = c % tex_cols;
+                    ty = c / tex_cols;
                     map_data[i * 16     ] = x * cell_width;
                     map_data[i * 16 +  1] = y * cell_height;
                     *reinterpret_cast<GLfloat *>(&map_data[i * 16 +  2]) = tx * tex_width;

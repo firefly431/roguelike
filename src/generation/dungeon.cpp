@@ -1,4 +1,6 @@
-#include <generation/generation.h>
+#include <generation/dungeon.h>
+
+#include <log/log.h>
 
 #include <algorithm>
 #include <fstream>
@@ -348,11 +350,29 @@ namespace generation {
             }
         } while (changed);
     }
-}
 
-// remove
-int main(int argc, char **argv) {
-    generation::Dungeon dun(301, 201);
-    dun.generate(100, 500);
-    dun.write("maze.txt");
+    std::vector<unsigned int> getTiles() {
+        std::vector<unsigned int> tiles(width * height);
+        for (unsigned int r = 0; r < height; r++) {
+            for (unsigned int c = 0; c < width; c++) {
+                int v = grid[r * width + c];
+                unsigned char ch;
+                if (v == 0)
+                    ch = 0;
+                else if (v > 0)
+                    ch = 1;
+                else if (v == -1)
+                    ch = 1; // corridor
+                else if (v == -2)
+                    ch = 1; // doorway
+                else if (v == -3)
+                    ch = 1; // dead end
+                else {
+                    LOG_ERR("Unknown element in grid: ", v);
+                    ch = 1;
+                }
+                tiles.push_back(ch);
+            }
+        }
+    }
 }
