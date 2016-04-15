@@ -14,6 +14,11 @@ namespace game {
         std::vector<ComponentMask> c_mask;
         // components
         std::vector<GraphicsComponent> c_graphics;
+    public:
+        Game(unsigned int capacity = 100);
+
+        unsigned int addEntity(); // returns the index of an empty entity
+        void removeEntity(unsigned int index);
     };
 }
 
